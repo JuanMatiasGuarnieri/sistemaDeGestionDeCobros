@@ -1,0 +1,18 @@
+{
+  "name": "sistema-gestion-backend",
+  "version": "1.0.0",
+  "description": "API REST para sistema de gestión de facturas",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "uuid": "^9.0.0"
+  }
+}

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vistas del Sistema de Gestión</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 10px; color: #1a1a2e; }
+    .subtitle { text-align: center; color: #666; margin-bottom: 30px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; }
+    .card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .card-header { background: linear-gradient(135deg, #3b82f6, #1d4ed8); padding: 16px 20px; }
+    .card-header h2 { color: white; font-size: 18px; }
+    .card-body { padding: 20px; }
+    .mock-screen { background: #f8fafc; border-radius: 12px; padding: 16px; border: 1px solid #e2e8f0; }
+    .mock-header { background: white; padding: 12px 16px; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
+    .mock-title { font-weight: 600; color: #1e293b; }
+    .mock-date { font-size: 12px; color: #64748b; }
+    .mock-sidebar { position: absolute; left: 0; top: 0; bottom: 0; width: 60px; background: white; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; align-items: center; padding-top: 16px; gap: 12px; }
+    .mock-nav-item { width: 36px; height: 36px; border-radius: 8px; background: #f1f5f9; }
+    .mock-nav-item.active { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .mock-content { margin-left: 60px; padding: 20px; }
+    .mock-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+    .mock-stat { background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; }
+    .mock-stat-icon { width: 40px; height: 40px; border-radius: 10px; margin-bottom: 8px; }
+    .mock-stat-value { font-size: 20px; font-weight: 700; color: #1e293b; }
+    .mock-stat-label { font-size: 12px; color: #64748b; }
+    .blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .green { background: linear-gradient(135deg, #10b981, #059669); }
+    .yellow { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    .mock-table { width: 100%; border-collapse: collapse; }
+    .mock-table th { text-align: left; padding: 10px 12px; font-size: 11px; color: #64748b; text-transform: uppercase; background: #f8fafc; }
+    .mock-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; }
+    .mock-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-paid { background: #d1fae5; color: #065f46; }
+    .badge-overdue { background: #fee2e2; color: #991b1b; }
+    .mock-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 10px; font-weight: 500; font-size: 14px; }
+    .btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+    .btn-secondary { background: white; color: #374151; border: 1px solid #e5e7eb; }
+    .mock-form { display: flex; flex-direction: column; gap: 16px; }
+    .mock-input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; background: #f8fafc; }
+    .mock-input:focus { outline: 2px solid #3b82f6; border-color: transparent; }
+    .mock-search { position: relative; }
+    .mock-suggestions { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
+    .mock-suggestion { padding: 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer; }
+    .mock-suggestion:hover { background: #f8fafc; }
+    .mock-actions { display: flex; gap: 8px; margin-top: 20px; }
+    .theme-toggle { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f1f5f9; border-radius: 8px; }
+    .login-screen { display: flex; min-height: 400px; }
+    .login-left { flex: 1; background: linear-gradient(135deg, #3b82f6, #1d4ed8); padding: 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; }
+    .login-right { flex: 1; padding: 40px; display: flex; flex-direction: column; justify-content: center; }
+    .login-logo { width: 80px; height: 80px; background: white; border-radius: 20px; margin-bottom: 20px; }
+    .login-form { max-width: 300px; margin: 0 auto; width: 100%; }
+    .nav-menu { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: white; border-right: 1px solid #e2e8f0; padding: 20px; }
+    .nav-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+    .nav-logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border-radius: 10px; }
+    .nav-items { display: flex; flex-direction: column; gap: 4px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; color: #64748b; cursor: pointer; }
+    .nav-item.active { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+    .alert-box { padding: 16px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px; margin-top: 16px; }
+    .progress-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; }
+    .empty-state { text-align: center; padding: 40px; color: #94a3b8; }
+    .index { position: fixed; top: 20px; right: 20px; background: white; padding: 16px 24px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .index a { text-decoration: none; color: #3b82f6; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="index">
+    <a href="#login">Login</a> | <a href="#dashboard">Dashboard</a> | <a href="#facturas">Facturas</a> | <a href="#cobros">Cobros</a>
+  </div>
+
+  <div class="container">
+    <h1>📱 Sistema de Gestión de Facturas</h1>
+    <p class="subtitle">Diseño de la interfaz de usuario</p>
+
+    <div class="grid">
+      <!-- LOGIN -->
+      <div class="card" id="login">
+        <div class="card-header"><h2>🔐 Pantalla de Login</h2></div>
+        <div class="card-body">
+          <div class="mock-screen">
+            <div class="login-screen">
+              <div class="login-left">
+                <div class="login-logo"></div>
+                <h3 style="margin-bottom: 8px;">Sistema de Gestión</h3>
+                <p style="opacity: 0.8; font-size: 14px;">Facturación y Cobranzas</p>
+              </div>
+              <div class="login-right">
+                <div class="login-form">
+                  <h4 style="margin-bottom: 20px; color: #1e293b;">Bienvenido</h4>
+                  <input type="text" class="mock-input" placeholder="correo@ejemplo.com" style="margin-bottom: 12px;">
+                  <input type="password" class="mock-input" placeholder="••••••••" style="margin-bottom: 16px;">
+                  <button class="mock-btn btn-primary" style="width: 100%; justify-content: center;">Iniciar sesión</button>
+                  <div style="margin-top: 20px; padding: 12px; background: #f8fafc; border-radius: 8px; font-size: 12px; color: #64748b;">
+                    <strong>Demo:</strong> admin@demo.com / admin123
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div class="card" id="dashboard">
+        <div class="card-header"><h2>📊 Dashboard</h2></div>
+        <div class="card-body">
+          <div class="mock-screen">
+            <div style="display: flex; gap: 240px; margin-bottom: 20px;">
+              <div>
+                <div class="mock-title">Resumen del Mes</div>
+                <div class="mock-date">lunes, 18 de mayo de 2026</div>
+              </div>
+              <div class="theme-toggle">
+                <span>☀️</span>
+                <span>🌙</span>
+              </div>
+            </div>
+
+            <div class="mock-stats">
+              <div class="mock-stat">
+                <div class="mock-stat-icon blue"></div>
+                <div class="mock-stat-value">$245.000</div>
+                <div class="mock-stat-label">Total Facturado</div>
+              </div>
+              <div class="mock-stat">
+                <div class="mock-stat-icon green"></div>
+                <div class="mock-stat-value">$180.000</div>
+                <div class="mock-stat-label">Total Cobrado</div>
+              </div>
+              <div class="mock-stat">
+                <div class="mock-stat-icon yellow"></div>
+                <div class="mock-stat-value">$65.000</div>
+                <div class="mock-stat-label">Pendiente</div>
+              </div>
+              <div class="mock-stat">
+                <div class="mock-stat-icon purple"></div>
+                <div class="mock-stat-value">48</div>
+                <div class="mock-stat-label">Clientes Activos</div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <div class="mock-title" style="margin-bottom: 12px;">Estado de Facturas</div>
+                <div style="margin-bottom: 8px;">
+                  <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                    <span>Cobradas</span><span>65%</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width: 65%; background: #10b981;"></div></div>
+                </div>
+                <div style="margin-bottom: 8px;">
+                  <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                    <span>Pendientes</span><span>25%</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width: 25%; background: #f59e0b;"></div></div>
+                </div>
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                    <span>Vencidas</span><span>10%</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width: 10%; background: #ef4444;"></div></div>
+                </div>
+              </div>
+
+              <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <div class="mock-title" style="margin-bottom: 12px;">Cobros por Cobrador</div>
+                <div style="display: flex; align-items: center; gap: 12px; padding: 8px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px;">
+                  <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 50%;"></div>
+                  <div style="flex: 1;"><div style="font-weight: 500; font-size: 14px;">Juan Cobrador</div><div style="font-size: 12px; color: #64748b;">12 cobros</div></div>
+                  <div style="font-weight: 600;">$85.000</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert-box">
+              <strong>⚠️ Alertas</strong>
+              <p style="font-size: 13px; margin-top: 4px;">Factura #FAC-002 vence en 2 días - Tech Solutions - $2.500</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FACTURAS -->
+      <div class="card" id="facturas">
+        <div class="card-header"><h2>📄 Gestión de Facturas</h2></div>
+        <div class="card-body">
+          <div class="mock-screen">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+              <div class="mock-title">Facturas - Mayo 2026</div>
+              <div style="display: flex; gap: 8px;">
+                <button class="mock-btn btn-secondary">📥 Importar Excel</button>
+                <button class="mock-btn btn-secondary">📷 Escanear</button>
+                <button class="mock-btn btn-primary">+ Nueva Factura</button>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+              <input type="text" class="mock-input" placeholder="Buscar..." style="max-width: 200px;">
+              <input type="month" class="mock-input" value="2026-05" style="width: 140px;">
+              <select class="mock-input" style="width: 140px;">
+                <option>Todos</option>
+                <option>Pendiente</option>
+                <option>Cobrada</option>
+                <option>Vencida</option>
+              </select>
+            </div>
+
+            <table class="mock-table">
+              <thead>
+                <tr>
+                  <th>Número</th>
+                  <th>Cliente</th>
+                  <th>Monto</th>
+                  <th>Emisión</th>
+                  <th>Vencimiento</th>
+                  <th>Estado</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight: 500;">FAC-001</td>
+                  <td>Empresa ABC</td>
+                  <td>$5.000</td>
+                  <td>15/05/2026</td>
+                  <td>15/06/2026</td>
+                  <td><span class="mock-badge badge-pending">Pendiente</span></td>
+                  <td>✏️ 🗑️</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 500;">FAC-002</td>
+                  <td>Tech Solutions</td>
+                  <td>$2.500</td>
+                  <td>10/05/2026</td>
+                  <td>10/06/2026</td>
+                  <td><span class="mock-badge badge-paid">Cobrada</span></td>
+                  <td>✏️ 🗑️</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 500;">FAC-003</td>
+                  <td>Servicios Médicos SA</td>
+                  <td>$3.200</td>
+                  <td>01/05/2026</td>
+                  <td>01/06/2026</td>
+                  <td><span class="mock-badge badge-overdue">Vencida</span></td>
+                  <td>✏️ 🗑️</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- COBROS -->
+      <div class="card" id="cobros">
+        <div class="card-header"><h2>💰 Registro de Cobros</h2></div>
+        <div class="card-body">
+          <div class="mock-screen">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+              <div class="mock-title">Cobros - Mayo 2026</div>
+              <button class="mock-btn btn-primary">+ Registrar Cobro</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;">
+              <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 13px; color: #64748b;">Total Cobrado</div>
+                <div style="font-size: 24px; font-weight: 700; color: #10b981;">$180.000</div>
+              </div>
+              <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 13px; color: #64748b;">Cantidad de Cobros</div>
+                <div style="font-size: 24px; font-weight: 700;">15</div>
+              </div>
+              <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 13px; color: #64748b;">Facturas Pendientes</div>
+                <div style="font-size: 24px; font-weight: 700; color: #f59e0b;">8</div>
+              </div>
+            </div>
+
+            <table class="mock-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Factura</th>
+                  <th>Cliente</th>
+                  <th>Monto</th>
+                  <th>Método</th>
+                  <th>Cobrador</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>18/05/2026</td>
+                  <td style="font-weight: 500;">FAC-002</td>
+                  <td>Tech Solutions</td>
+                  <td>$2.500</td>
+                  <td><span class="mock-badge badge-paid">Transferencia</span></td>
+                  <td>Juan Cobrador</td>
+                  <td>🗑️</td>
+                </tr>
+                <tr>
+                  <td>17/05/2026</td>
+                  <td style="font-weight: 500;">FAC-005</td>
+                  <td>Clínica Norte</td>
+                  <td>$4.000</td>
+                  <td><span class="mock-badge badge-paid">Efectivo</span></td>
+                  <td>Admin</td>
+                  <td>🗑️</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="margin-top: 24px; background: white; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <div class="mock-title" style="margin-bottom: 16px;">Nueva Factura</div>
+              <div class="mock-form" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <input type="text" class="mock-input" placeholder="Número de factura *">
+                <div class="mock-search">
+                  <input type="text" class="mock-input" placeholder="Buscar factura por número o cliente...">
+                  <div class="mock-suggestions">
+                    <div class="mock-suggestion">
+                      <div style="font-weight: 500;">FAC-001</div>
+                      <div style="font-size: 12px; color: #64748b;">Empresa ABC - $5.000</div>
+                    </div>
+                    <div class="mock-suggestion">
+                      <div style="font-weight: 500;">FAC-003</div>
+                      <div style="font-size: 12px; color: #64748b;">Servicios Médicos - $3.200</div>
+                    </div>
+                  </div>
+                </div>
+                <input type="text" class="mock-input" placeholder="Dirección">
+                <input type="number" class="mock-input" placeholder="Monto *">
+                <input type="date" class="mock-input">
+                <input type="date" class="mock-input">
+                <textarea class="mock-input" style="grid-column: span 2;" placeholder="Observaciones" rows="2"></textarea>
+              </div>
+              <div style="display: flex; gap: 12px; margin-top: 16px;">
+                <button class="mock-btn btn-secondary">Cancelar</button>
+                <button class="mock-btn btn-primary">Crear Factura</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLIENTES -->
+      <div class="card">
+        <div class="card-header"><h2>👥 Gestión de Clientes</h2></div>
+        <div class="card-body">
+          <div class="mock-screen">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+              <div class="mock-title">Clientes</div>
+              <button class="mock-btn btn-primary">+ Nuevo Cliente</button>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+              <input type="text" class="mock-input" placeholder="Buscar clientes..." style="max-width: 300px;">
+            </div>
+
+            <table class="mock-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Dirección</th>
+                  <th>Teléfono</th>
+                  <th>Plan</th>
+                  <th>Monto</th>
+                  <th>Estado</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight: 500;">Empresa ABC</td>
+                  <td>Av. Principal 123</td>
+                  <td>351-1234567</td>
+                  <td>Premium</td>
+                  <td>$5.000</td>
+                  <td><span class="mock-badge badge-paid">Activo</span></td>
+                  <td>✏️ 🗑️</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 500;">Tech Solutions</td>
+                  <td>Calle 45 678</td>
+                  <td>351-9876543</td>
+                  <td>Básico</td>
+                  <td>$2.500</td>
+                  <td><span class="mock-badge badge-paid">Activo</span></td>
+                  <td>✏️ 🗑️</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORTES -->
+      <div class="card">
+        <div class="card-header"><h2>📈 Reportes</h2></div>
+        <div class="card-body">
+          <div class="mock-screen">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+              <div class="mock-title">Reportes - Mayo 2026</div>
+              <input type="month" class="mock-input" value="2026-05" style="width: 140px;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+              <button style="background: white; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; cursor: pointer; text-align: left;">
+                <div style="font-weight: 600; color: #1e293b;">📊 Reporte de Facturas</div>
+                <div style="font-size: 13px; color: #64748b; margin-top: 4px;">Exportar todas las facturas</div>
+              </button>
+              <button style="background: white; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; cursor: pointer; text-align: left;">
+                <div style="font-weight: 600; color: #1e293b;">👥 Reporte por Cliente</div>
+                <div style="font-size: 13px; color: #64748b; margin-top: 4px;">Resumen por cliente</div>
+              </button>
+              <button style="background: white; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; cursor: pointer; text-align: left;">
+                <div style="font-weight: 600; color: #1e293b;">💰 Reporte de Cobros</div>
+                <div style="font-size: 13px; color: #64748b; margin-top: 4px;">Exportar cobros del mes</div>
+              </button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <div class="mock-title" style="margin-bottom: 12px;">Resumen del Mes</div>
+                <div style="display: flex; justify-content: space-between; padding: 8px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px;">
+                  <span style="color: #64748b;">Total Facturado</span>
+                  <span style="font-weight: 600;">$245.000</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px; background: #ecfdf5; border-radius: 8px; margin-bottom: 8px;">
+                  <span style="color: #64748b;">Total Cobrado</span>
+                  <span style="font-weight: 600; color: #059669;">$180.000</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px; background: #fefbeb; border-radius: 8px;">
+                  <span style="color: #64748b;">Pendiente</span>
+                  <span style="font-weight: 600; color: #d97706;">$65.000</span>
+                </div>
+              </div>
+
+              <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <div class="mock-title" style="margin-bottom: 12px;">Cobros por Método</div>
+                <div style="display: flex; justify-content: space-between; padding: 8px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px;">
+                  <span style="color: #64748b;">Efectivo</span>
+                  <span style="font-weight: 600;">$75.000</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px;">
+                  <span style="color: #64748b;">Transferencia</span>
+                  <span style="font-weight: 600;">$105.000</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px; padding: 20px; color: #64748b;">
+      <p>📱 Sistema de Gestión de Facturas v1.0.0 - Mayo 2026</p>
+      <p style="font-size: 13px; margin-top: 8px;">Diseño minimalista con tema claro/oscuro</p>
+    </div>
+  </div>
+</body>
+</html>
