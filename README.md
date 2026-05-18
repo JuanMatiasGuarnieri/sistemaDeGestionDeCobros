@@ -265,7 +265,7 @@ Este proyecto es para uso interno.
 ---
 
 ## 👤 Autor
-
+Desarrollado con ❤️ por **GUARNIERI NETWORK**.
 Sistema de Gestión Administrativa de Facturas
 
 Versión: 1.0.0
